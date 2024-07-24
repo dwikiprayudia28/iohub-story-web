@@ -1,0 +1,50 @@
+log:
+  level: info
+  sql: false
+  path: log/app.log
+  max_size: 10
+  max_count: 52
+  max_age: 7
+scheduler: false
+server:
+  id: DEV
+  addr: :9001
+  cors: "*.indosatooredoo.com,indosatooredoo.com,*.im3.id,im3.id,*.ioh.co.id,ioh.co.id"
+  path:
+    prefix:
+      v1: "/api"
+      admin: "/admin"
+  error:
+    mail:
+      subject: "Service Panic!"
+      to: "DevOps <devops-service@domain.com>"
+#
+# Authentication
+#
+auth:
+  key: vUmfxf2JiFjsR86P
+#
+# Database
+# --------
+db:
+  host: db
+  port: 3306
+  user: root
+  pass: passw0rd
+  name: backendb
+  loc: Asia/Jakarta
+  max_idle: 5
+  max_open: 5
+  max_lifetime: 5
+#
+# Mail
+# ----
+mail:
+  auth: false
+  skip_insecure: true
+  out:
+    from: "Indosat Ooredoo<noreply@ioh.co.id>"
+    host: smtp.gmail.com
+    port: 587
+    user: isatkloc.oa@gmail.com
+    pass: passW0rd$

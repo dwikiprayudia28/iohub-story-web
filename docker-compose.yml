@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+  db:
+    image: mariadb:10.3.14
+    volumes:
+      - /tmp:/var/run/mysqld
+      #- mariadb_db-data:/var/lib/mysql
+    #ports:
+    #  - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=passw0rd
+      - MYSQL_USER=gouser
+      - MYSQL_PASSOWRD=backend2019
+      - MYSQL_DATABASE=backendb
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DEBUG=${DEBUG:-false}
+        - APP_NAME=${APP:-"iohub-stories"}
+    volumes:
+      - ./res:/app/res
+      - ./static:/app/static
+    ports:
+      - 9001:9001
+      - 40000:40000
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+    environment:
+      - IOH_SCHEDULER=false
+      - IOH_LOG_LEVEL=debug
+      - IOH_LOG_SQL=true
+      - IOH_DB_HOST=db
+      - IOH_DB_PORT=3306
+      - IOH_DB_NAME=backendb
+      - IOH_DB_USER=root
+      - IOH_DB_PASS=passw0rd
+      - IOH_MAIL_AUTH=true
+    depends_on:
+      - db
+
+#volumes:
+#  mariadb_db-data:
+#    external: true

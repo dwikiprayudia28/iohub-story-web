@@ -1,0 +1,35 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+bin/
+_*
+iohub-stories
+main
+*.test
+
+# dependencies
+vendor/
+
+# IDEs and editors
+/.idea
+.c9/
+.settings/
+.vscode/
+.project
+.classpath
+*.launch
+*.sublime-workspace
+*.code-workspace
+.history/*
+
+# misc
+.cache/
+log/
+/report/
+static/data
+*.db
+.testCoverage.txt
+
+# System Files
+.DS_Store
+Thumbs.db

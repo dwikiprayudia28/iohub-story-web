@@ -1,0 +1,56 @@
+#!/bin/sh
+VERSION=1.8 # service template version DO NOT CHANGE!!
+
+# parsing arguments from command line
+process_args() {
+  # shellcheck disable=SC2039
+  while [[ $# -gt 0 ]]; do
+      case "$1" in
+      -a|--app)             APP_NAME=$2 && shift 2 ;;
+      -t|--title)           APP_TITLE=$2 && shift 2 ;;
+      -p|--prefix)          ENV_PREFIX=$2 && shift 2 ;;
+      -v|--version)         APP_VERSION=$2 && shift 2 ;;
+      -r|--no-repo)         WITH_REPO=false && shift 1 ;;
+      *) ;;
+      esac
+  done
+}
+
+# setup defaults
+APP_NAME=iohub-stories
+APP_TITLE="IOHub Stories"
+APP_VERSION=1.0
+ENV_PREFIX=IOH
+WITH_REPO=false
+
+# arguments setup
+process_args "$@"
+
+# validate
+if hash sed 2>/dev/null; then 
+    echo "Making this template into ${APP_NAME}"
+else 
+    echo "sed is not installed"
+    echo "install with \"brew install sed\""
+    exit 1
+fi 
+
+# process it
+# shellcheck disable=SC2039
+if [[ ${WITH_REPO} == "true" ]]; then
+    rm -rf .git
+fi
+
+find . -type f -name '*' -exec sed -i "s/iohub-stories/${APP_NAME}/g" {} +
+find . -type f -name '.gitlab-ci.yml' -exec sed -i "s/io-service/${APP_NAME}/g" {} +
+find . -type f \( -name '.gitlab-ci.yml' -o -name 'Makefile' \) -exec sed -i "s/io-dev-service/${APP_NAME}-dev/g" {} +
+find . -type f -name '*' -exec sed -i "s/IOH/${ENV_PREFIX}/g" {} +
+find . -type f -name '*.yml' -exec sed -i "s/${VERSION}/${APP_VERSION}/g" {} +
+find . -type f -name 'README.md' -exec sed -i "s/Service Template/${APP_TITLE}/g" {} +
+
+# shellcheck disable=SC2039
+if [[ ${WITH_REPO} == "true" ]]; then 
+    # shellcheck disable=SC2028
+    echo "v1.0\n- Initial Import" > CHANGELOG
+    git init && git add . && git commit -m "Initial import ${APP_NAME}"
+fi

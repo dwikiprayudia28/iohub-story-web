@@ -1,0 +1,9 @@
+.dockerignore
+.gitignore
+Dockerfile
+docker-compose.yml
+bin
+c.out
+vendor
+.cache
+.git

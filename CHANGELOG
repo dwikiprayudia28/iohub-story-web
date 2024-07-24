@@ -1,0 +1,31 @@
+v1.8
+- Add more date compare functions
+- Fix to remove deprecation
+- Upgrade to go v1.18
+
+v1.7
+- Upgrade to latest GORM v2.0
+
+v1.6
+- Hide banner
+
+v1.5
+- Add more helpers to handler
+
+v1.4
+- Add AES encryption utility
+
+v1.3
+- Fix to update core dependencies
+- Fix to update baseline
+
+v1.2
+- Fix OLA-1057 Database connection leaks on services
+
+v1.1
+- Update baseline codes
+- Upgrade to echo latest release (v4.5.0)
+- Upgrade toolboth (rate-limiter) to v6
+
+v1.0
+- Inital Release

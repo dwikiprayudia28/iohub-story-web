@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  api-service-dev:
+    image: im3iodev/iohub-stories:1.0
+    networks:
+      - db-prod
+    environment:
+      - IOH_SCHEDULER=true
+      - IOH_LOG_LEVEL=info
+      - IOH_LOG_SQL=false
+      - IOH_DB_HOST=mariadb
+      - IOH_DB_PORT=3306
+      - IOH_DB_NAME=backendb
+      - IOH_DB_USER=gouser
+      - IOH_DB_PASS=backend@2019
+      - IOH_DB_MAX_IDLE=5
+      - IOH_DB_MAX_OPEN=10
+      - IOH_DB_MAX_LIFETIME=5
+      - IOH_MAIL_AUTH=true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9001/readiness" ]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  db-prod:
+    external: true

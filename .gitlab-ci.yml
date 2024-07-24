@@ -1,0 +1,80 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  APP_NAME: "iohub-stories"
+  DEV_VERSION: "latest"
+  PROD_VERSION: "1.0"
+
+# test at all branches push
+test:
+  image: golang:1.20
+  stage: test
+  script:
+    - make test
+  only:
+    - develop
+
+# build only for develop
+build-dev:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$DHUB_USER" -p "$DHUB_PASS"
+  script:
+    - docker build --force-rm --pull -t "$DHUB_USER/$APP_NAME:$DEV_VERSION" .
+    - docker push "$DHUB_USER/$APP_NAME:$DEV_VERSION"
+  only:
+    - develop
+
+# deploy for develop
+deploy-dev:
+  # Custom portainer stack deployer
+  image: vvarp/gitlab-portainer-deploy
+  stage: deploy
+  variables:
+    PORTAINER_URL: "$CLUSTER_URL"
+    PORTAINER_USERNAME: "$CLUSTER_USER"
+    PORTAINER_PASSWORD: "$CLUSTER_PASSWD"
+    PORTAINER_STACK: "iohub-stories-dev"
+    STACKFILE: "docker/stack-dev.yml"
+  script:
+    - deploy
+  only:
+    - none
+
+# build only for master
+build-prod:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$DHUB_USER" -p "$DHUB_PASS"
+  script:
+    - docker build --force-rm --pull -t "$DHUB_USER/$APP_NAME:$PROD_VERSION" .
+    - docker push "$DHUB_USER/$APP_NAME:$PROD_VERSION"
+  only:
+    - master
+
+# deploy for master
+deploy-prod:
+  # Custom portainer stack deployer
+  image: vvarp/gitlab-portainer-deploy
+  stage: deploy
+  variables:
+    PORTAINER_URL: "$CLUSTER_URL"
+    PORTAINER_USERNAME: "$CLUSTER_USER"
+    PORTAINER_PASSWORD: "$CLUSTER_PASSWD"
+    PORTAINER_STACK: "iohub-stories"
+    STACKFILE: "docker/stack.yml"
+  script:
+    - deploy
+  only:
+    - none

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Add custom styles here if needed */
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <!-- Login Form -->
+    <div id="loginForm">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Chat Room -->
+    <div id="chatRoom" style="display: none;">
+        <h2>Chat Room</h2>
+        <div id="chatMessages"></div>
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="message">Message</label>
+                <input type="text" class="form-control" id="message" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom JavaScript -->
+<script>
+    // JavaScript code for handling login and chat functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var login = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var uservalid = false
+
+            // Perform login logic (e.g., validate credentials)
+            // For simplicity, assume successful login for any input
+
+            fetch('http://localhost:8080/api/v1/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ login, password }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Login failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Store token in local storage or session storage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', login);
+                    // Redirect or perform any action after successful login
+                    console.log('Login successful');
+                    // Example redirect to dashboard
+                    window.location.href = '/';
+                    // document.getElementById('loginForm').style.display = 'none';
+                    // document.getElementById('chatRoom').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    alert('Login failed. Please check your credentials.');
+                });
+
+        });
+
+        // Chat message sending
+        document.getElementById('messageForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var message = document.getElementById('message').value;
+
+            // Add message to chat display
+            var chatMessages = document.getElementById('chatMessages');
+            var messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            chatMessages.appendChild(messageElement);
+
+            // Clear input field
+            document.getElementById('message').value = '';
+        });
+    });
+</script>
+</body>
+</html>
